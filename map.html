@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>HERE Map View</title>
+    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    <style>
+      html, body, #mapContainer {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+    </style>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    <link rel="stylesheet" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+  </head>
+  <body>
+    <div id="mapContainer"></div>
+    <script>
+      const queryParams = new URLSearchParams(window.location.search);
+      const lat = parseFloat(queryParams.get('lat')) || 0;
+      const lon = parseFloat(queryParams.get('lon')) || 0;
+      const apikey=queryParams.get('apikey')||"";
+
+      const platform = new H.service.Platform({
+        apikey: apikey,
+      });
+
+      const defaultLayers = platform.createDefaultLayers();
+
+      const map = new H.Map(
+        document.getElementById("mapContainer"),
+        defaultLayers.vector.normal.map,
+        {
+          center: { lat: lat, lng: lon },
+          zoom: 15,
+          pixelRatio: window.devicePixelRatio || 1,
+        }
+      );
+
+      window.addEventListener("resize", () => map.getViewPort().resize());
+
+      const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+      const ui = H.ui.UI.createDefault(map, defaultLayers);
+
+      const marker = new H.map.Marker({ lat, lng: lon });
+      map.addObject(marker);
+    </script>
+  </body>
+</html>
